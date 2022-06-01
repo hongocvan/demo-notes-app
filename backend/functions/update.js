@@ -13,7 +13,7 @@ export const main = handler(async (event) => {
     },
     // 'UpdateExpression' defines the attributes to be updated
     // 'ExpressionAttributevalues' defines the value in the update expression
-    UpdateExpress: 'SET content = :content, attachment = :attachment',
+    UpdateExpression: 'SET content = :content, attachment = :attachment',
     ExpressionAttributeValues: {
       ':attachment': data.attachment || null,
       ':content': data.content || null,
