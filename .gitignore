@@ -1,6 +1,7 @@
 .sst
 .build
 node_modules
+coverage
 
 # environments
 .env*.local
