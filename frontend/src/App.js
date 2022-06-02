@@ -1,34 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import './App.css';
 import Routes from './Routers';
+import { AppContext } from './lib/contextLib';
+
+import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
+import { onError } from './lib/errorLib';
 
 function App() {
+  const nav = useNavigate();
+  const [isAuthenticated, userHasAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
+
+  useEffect(() => {
+    onLoad();
+  }, []);
+
+  async function onLoad() {
+    try {
+      await Auth.currentSession();
+    } catch (e) {
+      if (e !== 'No current user') {
+        onError(e);
+      }
+    }
+
+    setIsAuthenticating(false);
+  }
+
+  async function handleLogout() {
+    await Auth.signOut();
+
+    userHasAuthenticated(false);
+    nav('/login');
+  }
+
   return (
-    <div className="App container py-3">
-      <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
-        <LinkContainer to="/">
-          <Navbar.Brand href="/" className="font-weight-bold text-muted">
-            Huepress
-          </Navbar.Brand>
-        </LinkContainer>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          <Nav activeKey={window.location.pathname}>
-            <LinkContainer to="signup">
-              <Nav.Link href="/signup">Signup</Nav.Link>
-            </LinkContainer>
-            <LinkContainer to="signin">
-              <Nav.Link href="/signup">Signup</Nav.Link>
-            </LinkContainer>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-      <Routes />
-    </div>
+    !isAuthenticating && (
+      <div className="App container py-3">
+        <Navbar collapseOnSelect bg="light" expand="md" className="mb-3">
+          <LinkContainer to="/">
+            <Navbar.Brand href="/" className="font-weight-bold text-muted">
+              Huepress
+            </Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle />
+          <Navbar.Collapse className="justify-content-end">
+            <Nav activeKey={window.location.pathname}>
+              {isAuthenticated ? (
+                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              ) : (
+                <>
+                  <LinkContainer to="signup">
+                    <Nav.Link href="/signup">Signup</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="login">
+                    <Nav.Link href="/login">Login</Nav.Link>
+                  </LinkContainer>
+                </>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+        <AppContext.Provider value={{ isAuthenticated, userHasAuthenticated }}>
+          <Routes />
+        </AppContext.Provider>
+      </div>
+    )
   );
 }
 
