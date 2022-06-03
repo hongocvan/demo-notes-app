@@ -32,6 +32,8 @@ export default function NewNote() {
           config.MAX_ATTACHMENT_SIZE / 1000000
         } MB.`
       );
+
+      return;
     }
 
     setIsLoading(true);

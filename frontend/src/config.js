@@ -1,5 +1,7 @@
 const config = {
   MAX_ATTACHMENT_SIZE: 5000000,
+  STRIPE_KEY:
+    'pk_test_51L5iLdLzghZum0N6IG31liVuzGiW5JrgYVRVMExqOkeizKJ3GhPQWzCCwQO91Ov53NJzh6A3tNOLxfF42QYAtBvu00nb1bNWBs',
   // Backend config
   s3: {
     REGION: process.env.REACT_APP_REGION,
